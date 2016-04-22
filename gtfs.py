@@ -41,8 +41,7 @@ class Gtfs:
         times = []
         for update in updates:
             eta = update[1] - round(time.time())
-            if eta > 0:
-                times.append((update[0], eta, update[2]))
+            times.append((update[0], eta, update[2]))
         return times
 
 if __name__ == "__main__":
