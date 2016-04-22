@@ -3,8 +3,11 @@ from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
+from kivy.uix.dropdown import DropDown 
+
 from kivy.utils import escape_markup
 from gtfs import Gtfs
+from transit_util import get_stop_list, get_stop_dict
 
 import os
 
@@ -37,10 +40,29 @@ class Arrival(GridLayout):
 
 class ArrivalList(GridLayout):
 
+    LIST_LIM = 8
+
     def __init__(self, arrivals, **kwargs):
         super(ArrivalList, self).__init__(**kwargs)
-        self.rows = len(arrivals)
-        for arrival in arrivals:
+        self.rows = len(arrivals) + 1
+        if self.rows > self.LIST_LIM:
+            self.rows = self.LIST_LIM + 1
+        stops = get_stop_dict()
+        stop = stops[arrivals[0][2][:-1]]
+
+        direction = ""
+        if arrivals[0][2][-1] == 'N':
+            direction = "Northbound"
+        if arrivals[0][2][-1] == 'S':
+            direction = "Southbound"
+
+        self.add_widget(Label(
+            text=stop + " - " + direction,
+            font_size = '40sp'))
+        self.update(arrivals)
+
+    def update(self, arrivals):
+        for arrival in arrivals[:self.rows-1]:
             self.add_widget(Arrival(arrival))
 
 class ArrivalsApp(App):
@@ -51,7 +73,7 @@ class ArrivalsApp(App):
                 os.environ['MTA_API_KEY'] = f.readline().strip()
 
         gtfs = Gtfs(os.environ['MTA_API_KEY'])
-        times = gtfs.get_time_to_arrival('234N')
+        times = gtfs.get_time_to_arrival('239N')
         times.sort(key=lambda x: x[1])
         return ArrivalList(times)
 
