@@ -104,7 +104,8 @@ class FullscreenWindow:
                     bg = '#00933C'
                 else:
                     bg = '808183'
-                icon = Label(self.arrival_frame, text=arrival[0],
+                icon = Label(self.arrival_frame, 
+                    text="  {0}  ".format(arrival[0]),
                     font=("Helvetica", 24), fg='white', bg=bg)
 
             icon.pack(side=LEFT)
