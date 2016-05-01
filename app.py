@@ -13,7 +13,7 @@ from functools import partial
 from gtfs import Gtfs
 from transit_util import get_stop_list, get_stop_dict
 
-import os
+import os, sys
 
 class SubwayBullet(Image):
 
@@ -77,7 +77,7 @@ class ArrivalList(GridLayout):
 class ArrivalsApp(App):
 
     def build(self):
-        self.station = '239N'
+        self.station = sys.argv[1]
         if not os.environ.get('MTA_API_KEY'):
             with open("api_key") as f:
                 os.environ['MTA_API_KEY'] = f.readline().strip()
@@ -91,8 +91,11 @@ class ArrivalsApp(App):
         return self.arrivals
 
     def update_arrivals(self, dt):
-        self.times = self.gtfs.get_time_to_arrival(self.station)
-        self.times.sort(key=lambda x: x[1])
-        self.arrivals.update(self.times)      
+        try:
+            self.times = self.gtfs.get_time_to_arrival(self.station)
+            self.times.sort(key=lambda x: x[1])
+            self.arrivals.update(self.times)      
+        except:
+            pass
 
 ArrivalsApp().run()
