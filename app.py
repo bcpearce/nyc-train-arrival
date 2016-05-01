@@ -114,6 +114,8 @@ class FullscreenWindow:
             icon.pack(side=LEFT)
 
             minutes = round(float(arrival[1]/60.0))
+            if minutes < 0:
+                minutes = 0
 
             if minutes <= 0:
                 statement = Label(self.arrival_frame, text="  Now Arriving ",
