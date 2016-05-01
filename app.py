@@ -16,7 +16,8 @@ class SubwayBullet(PhotoImage):
 
 class FullscreenWindow:
 
-    def __init__(self):
+    def __init__(self, stop_id):
+        self.stop_id = stop_id
         self.tk = Tk()
 
         self.tk.configure(bg='#111111')
@@ -35,7 +36,7 @@ class FullscreenWindow:
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.state = True
         self.tk.attributes('-fullscreen', self.state)
-        self.stop_id = '239N'
+        
         self.add_header()
         self.update_arrivals()
 
@@ -127,5 +128,7 @@ if __name__ == "__main__":
         with open("api_key") as f:
             os.environ['MTA_API_KEY'] = f.readline().strip()
 
-    w = FullscreenWindow()
+    station = sys.argv[1]
+
+    w = FullscreenWindow(station)
     w.tk.mainloop()
