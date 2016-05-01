@@ -39,7 +39,7 @@ class FullscreenWindow:
 
     def update_arrivals(self):
         self.print_arrivals()
-        self.tk.after(60000, self.update_arrivals)
+        self.tk.after(30000, self.update_arrivals)
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
