@@ -109,7 +109,7 @@ class FullscreenWindow:
                     font=("Helvetica", 24), fg='white', bg=bg)
 
             icon.pack(side=LEFT)
-            statement = Label(self.arrival_frame, text="Will arrive In",
+            statement = Label(self.arrival_frame, text="  Will Arrive In ",
                 font=("Helvetica", 24))
             statement.pack(side=LEFT)
             minutes = round(float(arrival[1]/60.0))
