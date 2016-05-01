@@ -41,15 +41,22 @@ class FullscreenWindow:
         gtfs = Gtfs(os.environ['MTA_API_KEY'])
         try:
             arrivals = gtfs.get_time_to_arrival('239N')
+            arrivals.sort(key=lambda x: x[1])
         except:
             return
 
         for arrival in arrivals:
             self.arrival_frame = Frame(self.frame)
-            self.arrival_frame.pack(side=BOTTOM)
-            bullet = SubwayBullet(arrival[0])
-            icon = Label(self.arrival_frame, image=bullet)
-            icon.bullet = bullet
+            self.arrival_frame.pack(side=TOP, fill=X)
+            
+            try:
+                bullet = SubwayBullet(arrival[0])
+                icon = Label(self.arrival_frame, image=bullet)
+                icon.bullet = bullet
+                
+            except TclError:
+                icon = Label(self.arrival_frame, text=arrival[0])
+                
             icon.pack(side=LEFT)
             statement = Label(self.arrival_frame, text="Will arrive In")
             statement.pack(side=LEFT)
