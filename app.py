@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os
+import sys, os, traceback
 from gtfs import Gtfs
 
 if sys.version_info[0] == 2:
@@ -55,8 +55,15 @@ class FullscreenWindow:
                 icon.bullet = bullet
                 
             except TclError:
+                traceback.print_exc()
+                if int(arrival[0][0]) in [1,2,3]:
+                    bg = '#EE352E'
+                elif int(arrival[0][0]) in [4,5,6]:
+                    bg = '#00933C'
+                else:
+                    bg = '808183'
                 icon = Label(self.arrival_frame, text=arrival[0],
-                    font=("Helvetica", 32))
+                    font=("Helvetica", 32), fg='white', bg=bg)
 
             icon.pack(side=LEFT)
             statement = Label(self.arrival_frame, text="Will arrive In",
@@ -66,7 +73,7 @@ class FullscreenWindow:
             time_str = "{0} min".format(int(minutes))
             time = Label(self.arrival_frame, text=time_str,
                 font=("Helvetica", 32))
-            time.pack(side=LEFT)
+            time.pack(side=RIGHT)
         
 
 if __name__ == "__main__":
