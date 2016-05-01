@@ -66,7 +66,7 @@ class FullscreenWindow:
             font=("Helvetica", 40, "bold"))
         self.subheader = Label(self.frame,
             text=direction,
-            font=("Helvetica", 34, "bold"))
+            font=("Helvetica", 20, "bold"))
         self.header.pack(side=TOP)
         self.subheader.pack(side=TOP)
 
@@ -105,16 +105,16 @@ class FullscreenWindow:
                 else:
                     bg = '808183'
                 icon = Label(self.arrival_frame, text=arrival[0],
-                    font=("Helvetica", 32), fg='white', bg=bg)
+                    font=("Helvetica", 24), fg='white', bg=bg)
 
             icon.pack(side=LEFT)
             statement = Label(self.arrival_frame, text="Will arrive In",
-                font=("Helvetica", 32))
+                font=("Helvetica", 24))
             statement.pack(side=LEFT)
             minutes = round(float(arrival[1]/60.0))
             time_str = "{0} min".format(int(minutes))
             time = Label(self.arrival_frame, text=time_str,
-                font=("Helvetica", 32))
+                font=("Helvetica", 24))
             time.pack(side=RIGHT)
         
 
