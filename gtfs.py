@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
     gtfs = Gtfs(os.environ['MTA_API_KEY'])
 
-    times = gtfs.get_time_to_arrival('239N')
+    times = gtfs.get_time_to_arrival('236S')
     for eta in times:
         print "There is a {0} train arriving in {1}:{2:02d}".format(eta[0], int(eta[1]/60), int(eta[1]%60))
+    pdb.set_trace()
