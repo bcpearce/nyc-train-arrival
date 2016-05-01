@@ -55,14 +55,17 @@ class FullscreenWindow:
                 icon.bullet = bullet
                 
             except TclError:
-                icon = Label(self.arrival_frame, text=arrival[0])
-                
+                icon = Label(self.arrival_frame, text=arrival[0],
+                    font=("Helvetica", 32))
+
             icon.pack(side=LEFT)
-            statement = Label(self.arrival_frame, text="Will arrive In")
+            statement = Label(self.arrival_frame, text="Will arrive In",
+                font=("Helvetica", 32))
             statement.pack(side=LEFT)
             minutes = round(float(arrival[1]/60.0))
             time_str = "{0} min".format(int(minutes))
-            time = Label(self.arrival_frame, text=time_str)
+            time = Label(self.arrival_frame, text=time_str,
+                font=("Helvetica", 32))
             time.pack(side=LEFT)
         
 
