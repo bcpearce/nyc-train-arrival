@@ -55,7 +55,7 @@ class FullscreenWindow:
             direction = "Southbound"
 
         self.header = Label(self.frame,
-            text=stop + " - " + direction,
+            text=stop + " - \n" + direction,
             font=("Helvetica", 40, "bold"))
         self.header.pack()
 
