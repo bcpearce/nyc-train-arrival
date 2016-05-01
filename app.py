@@ -26,13 +26,20 @@ class FullscreenWindow:
         self.tk.attributes('-zoomed', True)
         self.frame = Frame(self.tk)
         self.frame.pack()
+        self.list_frame = Frame(self.tk)
+        self.list_frame.pack()
         self.state = False
         self.tk.bind("<F11>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.state = True
         self.tk.attributes('-fullscreen', self.state)
         self.stop_id = '239N'
+        self.add_header()
         self.update_arrivals()
+
+    def update_arrivals(self):
+        self.print_arrivals()
+        self.tk.after(60000, self.update_arrivals)
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
@@ -55,11 +62,22 @@ class FullscreenWindow:
             direction = "Southbound"
 
         self.header = Label(self.frame,
-            text=stop + " - \n" + direction,
+            text=stop,
             font=("Helvetica", 40, "bold"))
-        self.header.pack()
+        self.subheader = Label(self.frame,
+            text=direction,
+            font=("Helvetica", 34, "bold"))
+        self.header.pack(side=TOP)
+        self.subheader.pack(side=TOP)
 
-    def update_arrivals(self):
+    def clear_old_arrivals(self):
+        try:
+            for widget in self.list_frame.winfo_children():
+                widget.destroy()
+        except:
+            pass
+
+    def print_arrivals(self):
         gtfs = Gtfs(os.environ['MTA_API_KEY'])
         try:
             arrivals = gtfs.get_time_to_arrival(self.stop_id)
@@ -67,10 +85,10 @@ class FullscreenWindow:
         except:
             return
 
-        self.add_header()
+        self.clear_old_arrivals()
 
         for arrival in arrivals:
-            self.arrival_frame = Frame(self.frame)
+            self.arrival_frame = Frame(self.list_frame)
             self.arrival_frame.pack(side=TOP, fill=X)
             
             try:
