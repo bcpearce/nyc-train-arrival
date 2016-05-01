@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys, os, traceback
 from gtfs import Gtfs
+from transit_util import get_stop_dict
 
 if sys.version_info[0] == 2:
     from Tkinter import *
@@ -17,6 +18,11 @@ class FullscreenWindow:
 
     def __init__(self):
         self.tk = Tk()
+
+        self.tk.configure(bg='#111111')
+        self.tk.tk_setPalette(background='#111111', 
+            foreground='#ffffff')
+
         self.tk.attributes('-zoomed', True)
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -25,7 +31,8 @@ class FullscreenWindow:
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.state = True
         self.tk.attributes('-fullscreen', self.state)
-        self.update_arrivals('239N')
+        self.stop_id = '239N'
+        self.update_arrivals()
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
@@ -37,13 +44,30 @@ class FullscreenWindow:
         self.tk.attributes('-fullscreen', self.state)
         return "break"
 
-    def update_arrivals(self, stop_id):
+    def add_header(self):
+        stops = get_stop_dict()
+        stop = stops[self.stop_id[:-1]]
+
+        direction = ""
+        if self.stop_id[-1] == 'N':
+            direction = "Northbound"
+        if self.stop_id[-1] == 'S':
+            direction = "Southbound"
+
+        self.header = Label(self.frame,
+            text=stop + " - " + direction,
+            font=("Helvetica", 40, "bold"))
+        self.header.pack()
+
+    def update_arrivals(self):
         gtfs = Gtfs(os.environ['MTA_API_KEY'])
         try:
-            arrivals = gtfs.get_time_to_arrival('239N')
+            arrivals = gtfs.get_time_to_arrival(self.stop_id)
             arrivals.sort(key=lambda x: x[1])
         except:
             return
+
+        self.add_header()
 
         for arrival in arrivals:
             self.arrival_frame = Frame(self.frame)
