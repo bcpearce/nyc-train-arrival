@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, traceback
+import sys, os, traceback, datetime
 from gtfs import Gtfs
 from transit_util import get_stop_dict
 
@@ -41,8 +41,12 @@ class FullscreenWindow:
         self.update_arrivals()
 
     def update_arrivals(self):
-        self.print_arrivals()
-        self.tk.after(30000, self.update_arrivals)
+        try:
+            self.print_arrivals()
+            print "Updated {0}".format(str(datetime.datetime.now()))
+        finally:
+            # run even if printing arrivals fails
+            self.tk.after(30000, self.update_arrivals)
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state
@@ -78,6 +82,7 @@ class FullscreenWindow:
             for widget in self.list_frame.winfo_children():
                 widget.destroy()
         except:
+            # handle exception caused by lack of arrivals
             pass
 
     def print_arrivals(self):
