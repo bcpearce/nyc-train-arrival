@@ -114,33 +114,19 @@ class FullscreenWindow:
         self.clear_old_arrivals()
 
         for arrival in arrivals:
+            minutes = round(float(arrival[1]/60.0))
+            # if the minutes is < -2, don't bother displaying
+            if minutes < -2:
+                continue
+
             self.arrival_frame = Frame(self.list_frame)
             self.arrival_frame.pack(side=TOP, fill=X)
+
             
-            try:
-                bullet = SubwayBullet(arrival[0])
-                icon = Label(self.arrival_frame, image=bullet)
-                icon.bullet = bullet
-                
-            except TclError:
-                print "Failed to use icons, falling back to text formatting"
-                if int(arrival[0][0]) in [1,2,3]:
-                    bg = '#EE352E'
-                elif int(arrival[0][0]) in [4,5,6]:
-                    bg = '#00933C'
-                else:
-                    bg = '808183'
-                icon = Label(self.arrival_frame, 
-                    text="  {0}  ".format(arrival[0]),
-                    font=("Helvetica", 24), fg='white', bg=bg)
-
-            icon.pack(side=LEFT)
-
-            minutes = round(float(arrival[1]/60.0))
-            if minutes < 0:
+            if minutes < 0 and minutes >= -2:
                 minutes = 0
 
-            if minutes <= 0:
+            if minutes == 0:
                 statement = Label(self.arrival_frame, text="  Now Arriving ",
                     font=("Helvetica", 24, 'bold italic'), fg='#ffdb4d')
 
@@ -148,12 +134,31 @@ class FullscreenWindow:
                 statement = Label(self.arrival_frame, text="  Will Arrive In ",
                     font=("Helvetica", 24))
 
-            statement.pack(side=LEFT)
-            
-            time_str = "{0} min".format(int(minutes))
-            time = Label(self.arrival_frame, text=time_str,
-                font=("Helvetica", 24))
-            time.pack(side=RIGHT)
+            if minutes >= 0:
+                try:
+                    bullet = SubwayBullet(arrival[0])
+                    icon = Label(self.arrival_frame, image=bullet)
+                    icon.bullet = bullet
+                    
+                except TclError:
+                    print "Failed to use icons, falling back to text formatting"
+                    if int(arrival[0][0]) in [1,2,3]:
+                        bg = '#EE352E'
+                    elif int(arrival[0][0]) in [4,5,6]:
+                        bg = '#00933C'
+                    else:
+                        bg = '808183'
+                    icon = Label(self.arrival_frame, 
+                        text="  {0}  ".format(arrival[0]),
+                        font=("Helvetica", 24), fg='white', bg=bg)
+
+                icon.pack(side=LEFT)
+                statement.pack(side=LEFT)
+                
+                time_str = "{0} min".format(int(minutes))
+                time = Label(self.arrival_frame, text=time_str,
+                    font=("Helvetica", 24))
+                time.pack(side=RIGHT)
 
         print "Updated {0}".format(str(datetime.datetime.now()))
         
