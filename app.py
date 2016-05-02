@@ -105,7 +105,7 @@ class FullscreenWindow:
                 icon.bullet = bullet
                 
             except TclError:
-                traceback.print_exc()
+                print "Failed to use icons, falling back to text formatting"
                 if int(arrival[0][0]) in [1,2,3]:
                     bg = '#EE352E'
                 elif int(arrival[0][0]) in [4,5,6]:
