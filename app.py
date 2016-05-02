@@ -25,7 +25,7 @@ class FullscreenWindow:
             foreground='#ffffff')
 
         self.tk.attributes('-zoomed', True)
-        #self.tk.config(cursor='none')
+        self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
