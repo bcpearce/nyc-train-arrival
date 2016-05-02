@@ -25,7 +25,7 @@ class FullscreenWindow:
             foreground='#ffffff')
 
         self.tk.attributes('-zoomed', True)
-        self.tk.config(cursor='none')
+        #self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -40,10 +40,20 @@ class FullscreenWindow:
         self.add_header()
         self.update_arrivals()
 
+    def northbound_southbound_toggle(self):
+        if self.stop_id[-1] == 'N':
+            self.stop_id = self.stop_id[:-1] + 'S'
+        elif self.stop_id[-1] == 'S':
+            self.stop_id = self.stop_id[:-1] + 'N'
+        print "Switched direction {0}".format(self.stop_id)
+        self.clear_old_arrivals()
+        self.clear_header()
+        self.add_header()
+        self.print_arrivals()
+
     def update_arrivals(self):
         try:
             self.print_arrivals()
-            print "Updated {0}".format(str(datetime.datetime.now()))
         finally:
             # run even if printing arrivals fails
             self.tk.after(30000, self.update_arrivals)
@@ -74,8 +84,16 @@ class FullscreenWindow:
         self.subheader = Label(self.frame,
             text=direction,
             font=("Helvetica", 20, "bold"))
+        self.subheader.bind("<Button-1>", lambda e: self.northbound_southbound_toggle())
         self.header.pack(side=TOP)
         self.subheader.pack(side=TOP)
+
+    def clear_header(self):
+        try:
+            for widget in self.frame.winfo_children():
+                widget.destroy()
+        except:
+            pass
 
     def clear_old_arrivals(self):
         try:
@@ -136,6 +154,8 @@ class FullscreenWindow:
             time = Label(self.arrival_frame, text=time_str,
                 font=("Helvetica", 24))
             time.pack(side=RIGHT)
+
+        print "Updated {0}".format(str(datetime.datetime.now()))
         
 
 if __name__ == "__main__":
