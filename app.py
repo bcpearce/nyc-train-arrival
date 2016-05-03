@@ -80,10 +80,10 @@ class FullscreenWindow:
 
         self.header = Label(self.frame,
             text=stop,
-            font=("Helvetica", 40, "bold"))
+            font=("Helvetica", 24, "bold"))
         self.subheader = Label(self.frame,
             text=direction,
-            font=("Helvetica", 20, "bold"))
+            font=("Helvetica", 18, "bold"))
         self.subheader.bind("<Button-1>", lambda e: self.northbound_southbound_toggle())
         self.header.pack(side=TOP)
         self.subheader.pack(side=TOP)
