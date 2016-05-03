@@ -103,6 +103,26 @@ class FullscreenWindow:
             # handle exception caused by lack of arrivals
             pass
 
+    def format_icon(self, arrival):
+        try:
+            bullet = SubwayBullet(arrival[0])
+            icon = Label(self.arrival_frame, image=bullet)
+            icon.bullet = bullet
+            
+        except TclError:
+            print "Failed to use icons, falling back to text formatting"
+            if int(arrival[0][0]) in [1,2,3]:
+                bg = '#EE352E'
+            elif int(arrival[0][0]) in [4,5,6]:
+                bg = '#00933C'
+            else:
+                bg = '808183'
+            icon = Label(self.arrival_frame, 
+                text="  {0}  ".format(arrival[0]),
+                font=("Helvetica", 24), fg='white', bg=bg)
+
+        return icon
+
     def print_arrivals(self):
         gtfs = Gtfs(os.environ['MTA_API_KEY'])
         try:
@@ -135,22 +155,7 @@ class FullscreenWindow:
                     font=("Helvetica", 24))
 
             if minutes >= 0:
-                try:
-                    bullet = SubwayBullet(arrival[0])
-                    icon = Label(self.arrival_frame, image=bullet)
-                    icon.bullet = bullet
-                    
-                except TclError:
-                    print "Failed to use icons, falling back to text formatting"
-                    if int(arrival[0][0]) in [1,2,3]:
-                        bg = '#EE352E'
-                    elif int(arrival[0][0]) in [4,5,6]:
-                        bg = '#00933C'
-                    else:
-                        bg = '808183'
-                    icon = Label(self.arrival_frame, 
-                        text="  {0}  ".format(arrival[0]),
-                        font=("Helvetica", 24), fg='white', bg=bg)
+                icon = self.format_icon(arrival)
 
                 icon.pack(side=LEFT)
                 statement.pack(side=LEFT)
