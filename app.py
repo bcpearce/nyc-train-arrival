@@ -104,6 +104,17 @@ class FullscreenWindow:
             pass
 
     def format_icon(self, arrival):
+
+        UNICODE_DICT = {'1':unichr(0x2460),
+                        '2':unichr(0x2461),
+                        '3':unichr(0x2462),
+                        '4':unichr(0x2463),
+                        '5':unichr(0x2464),
+                        '5X':unichr(0x2464),
+                        '6':unichr(0x2465),
+                        'GS':unichr(0x24C8),
+                        '6X':unichr(0x2465)+unichr(0x2666)}
+
         try:
             bullet = SubwayBullet(arrival[0])
             icon = Label(self.arrival_frame, image=bullet)
@@ -112,14 +123,14 @@ class FullscreenWindow:
         except TclError:
             print "Failed to use icons, falling back to text formatting"
             if int(arrival[0][0]) in [1,2,3]:
-                bg = '#EE352E'
+                fg = '#EE352E'
             elif int(arrival[0][0]) in [4,5,6]:
-                bg = '#00933C'
+                fg = '#00933C'
             else:
-                bg = '808183'
+                fg = '808183'
             icon = Label(self.arrival_frame, 
-                text="  {0}  ".format(arrival[0]),
-                font=("Helvetica", 24), fg='white', bg=bg)
+                text=u"  {0}  ".format(UNICODE_DICT[arrival[0]]),
+                font=("Helvetica", 24), fg=fg)
 
         return icon
 
