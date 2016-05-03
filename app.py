@@ -10,9 +10,8 @@ else:
 
 class SubwayBullet(PhotoImage):
 
-    def __init__(self, service_name, fmt='png', **kwargs):
-        self.tk = Tk()
-        kwargs['file'] = "img/{0}.{1}".format(service_name, fmt)
+    def __init__(self, service_name, **kwargs):
+        kwargs['file'] = "img/{0}.png".format(service_name)
         PhotoImage.__init__(self, **kwargs)
 
 class FullscreenWindow:
@@ -21,8 +20,8 @@ class FullscreenWindow:
         self.stop_id = stop_id
         self.tk = Tk()
 
-        self.tk.configure(bg='#000000')
-        self.tk.tk_setPalette(background='#000000', 
+        self.tk.configure(bg='#111111')
+        self.tk.tk_setPalette(background='#111111', 
             foreground='#ffffff')
 
         self.tk.attributes('-zoomed', True)
@@ -116,31 +115,22 @@ class FullscreenWindow:
                         'GS':unichr(0x24C8),
                         '6X':unichr(0x2465)+unichr(0x2666)}
 
-        
         try:
             bullet = SubwayBullet(arrival[0])
             icon = Label(self.arrival_frame, image=bullet)
             icon.bullet = bullet
-
-        except TclError:
-            # fallback to using .gif library
-            try:
-                bullet = SubwayBullet(arrival[0], fmt='gif')
-                icon = Label(self.arrival_frame, image=bullet)
-                icon.bullet = bullet
             
-            # fallback to using unicode
-            except TclError:
-                print "Failed to use icons, falling back to text formatting"
-                if int(arrival[0][0]) in [1,2,3]:
-                    fg = '#EE352E'
-                elif int(arrival[0][0]) in [4,5,6]:
-                    fg = '#00933C'
-                else:
-                    fg = '808183'
-                icon = Label(self.arrival_frame, 
-                    text=u"  {0}  ".format(UNICODE_DICT[arrival[0]]),
-                    font=("Helvetica", 24), fg=fg)
+        except TclError:
+            print "Failed to use icons, falling back to text formatting"
+            if int(arrival[0][0]) in [1,2,3]:
+                fg = '#EE352E'
+            elif int(arrival[0][0]) in [4,5,6]:
+                fg = '#00933C'
+            else:
+                fg = '808183'
+            icon = Label(self.arrival_frame, 
+                text=u"  {0}  ".format(UNICODE_DICT[arrival[0]]),
+                font=("Helvetica", 24), fg=fg)
 
         return icon
 
