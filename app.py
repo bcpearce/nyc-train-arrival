@@ -8,24 +8,22 @@ if sys.version_info[0] == 2:
 else:
     from tkinter import *
 
-class SubwayBullet(PhotoImage):
-
-    def __init__(self, service_name, **kwargs):
-        kwargs['file'] = "img/{0}.png".format(service_name)
-        PhotoImage.__init__(self, **kwargs)
+from subway_bullet import *
+from station_selector import *
 
 class FullscreenWindow:
 
     def __init__(self, stop_id):
         self.stop_id = stop_id
         self.tk = Tk()
+        self.tk.wm_title("NYC Train Arrival")
 
         self.tk.configure(bg='#111111')
         self.tk.tk_setPalette(background='#111111', 
             foreground='#ffffff')
 
         self.tk.attributes('-zoomed', True)
-        self.tk.config(cursor='none')
+        #self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -36,6 +34,8 @@ class FullscreenWindow:
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.state = True
         self.tk.attributes('-fullscreen', self.state)
+
+        self.stops = get_stop_dict()
         
         self.add_header()
         self.update_arrivals()
@@ -69,24 +69,34 @@ class FullscreenWindow:
         return "break"
 
     def add_header(self):
-        stops = get_stop_dict()
-        stop = stops[self.stop_id[:-1]]
+        stop = self.stops[self.stop_id[:-1]]
 
         direction = ""
         if self.stop_id[-1] == 'N':
             direction = "Northbound"
         if self.stop_id[-1] == 'S':
             direction = "Southbound"
-
+        
         self.header = Label(self.frame,
             text=stop,
-            font=("Helvetica", 24, "bold"))
+            font=("Helvetica", 30, "bold"))
+        """
+        self.header = StationSelector(Gtfs(os.environ['MTA_API_KEY']), 
+            self.frame,
+            font=("Helvetica", 36, "bold"))
+        """
         self.subheader = Label(self.frame,
             text=direction,
-            font=("Helvetica", 18, "bold"))
+            font=("Helvetica", 24, "bold"))
+        self.header.bind("<Button-1>", lambda e: self.launch_station_selector())
         self.subheader.bind("<Button-1>", lambda e: self.northbound_southbound_toggle())
         self.header.pack(side=TOP)
         self.subheader.pack(side=TOP)
+
+    def launch_station_selector(self):
+        self.station_selector = StationSelector(
+            Gtfs(os.environ['MTA_API_KEY']), self.header.cget('text'))
+        self.station_selector.mainloop()
 
     def clear_header(self):
         try:
@@ -114,9 +124,6 @@ class FullscreenWindow:
                         '6':unichr(0x2465),
                         'GS':unichr(0x24C8),
                         '6X':unichr(0x2465)+unichr(0x2666)}
-
-        
-
 
         try:
             bullet = SubwayBullet(arrival[0])
