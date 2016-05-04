@@ -115,9 +115,16 @@ class FullscreenWindow:
                         'GS':unichr(0x24C8),
                         '6X':unichr(0x2465)+unichr(0x2666)}
 
+        
+
+
         try:
+            # get screen size
+            # reduce to be 1/x of screen size
+            icon_height = int(self.tk.winfo_screenheight()/6.0)
+
             bullet = SubwayBullet(arrival[0])
-            icon = Label(self.arrival_frame, image=bullet)
+            icon = Label(self.arrival_frame, image=bullet, height=icon_height)
             icon.bullet = bullet
             
         except TclError:
