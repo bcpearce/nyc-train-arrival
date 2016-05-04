@@ -1,4 +1,4 @@
-import sys
+import sys, copy
 
 if sys.version_info[0] == 2:
     from Tkinter import *
@@ -9,7 +9,7 @@ import transit_util, gtfs
 
 class StationSelector(Toplevel):
 
-    def __init__(self, gtfs, station_name=None, master=None, **kwargs):
+    def __init__(self, gtfs, tkStationName=None, master=None, **kwargs):
         self.stop_keys = gtfs.get_stations_with_gtfs_data()
         self.stop_dict = transit_util.get_stop_names_from_keys(self.stop_keys)
         self.box_vals = sorted(self.stop_dict.keys())
@@ -23,10 +23,10 @@ class StationSelector(Toplevel):
         self.bind("<Escape>", self.end_fullscreen)
         self.state = True
         self.attributes('-fullscreen', self.state)
-        self.station_name = station_name
+        self.tkStationName = tkStationName
 
         try:
-            station_inx = self.box_vals.index(self.station_name)
+            station_inx = self.box_vals.index(self.tkStationName.get())
             if station_inx < list_len:
                 self.labels = self.box_vals[:list_len]
             elif station_inx > len(self.box_vals) - list_len - 1:
@@ -49,12 +49,19 @@ class StationSelector(Toplevel):
         for l in self.labels:
             options = {'text':l, 'font':("Helvetica", 24, "bold")}
             # put special color on current station
-            if l.strip() == self.station_name.strip():
+            if l.strip() == self.tkStationName.get().strip():
                 options['fg'] = '#ffdb4d'
             nl = Label(self,**options)
+            nl.bind("<Button-1>", lambda e: self.select_station(e))
             nl.pack()
 
         self.down_btn.pack()
+
+    def select_station(self, event):
+        selected_name = event.widget.cget('text')
+        self.tkStationName.set(selected_name)
+        print "Changed to station {0}".format(selected_name)
+        self.destroy()
 
     def scroll(self, number):
         first_inx = self.box_vals.index(self.labels[0]) + number
@@ -66,8 +73,6 @@ class StationSelector(Toplevel):
             self.labels = self.box_vals[first_inx:last_inx+1]
             self.populate()
         # don't bother scrolling if beyond the range
-
-    def set_new_station
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state

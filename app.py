@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, os, traceback, datetime
 from gtfs import Gtfs
-from transit_util import get_stop_dict
+from transit_util import get_stop_dict, get_stop_name_dict
 
 if sys.version_info[0] == 2:
     from Tkinter import *
@@ -36,9 +36,20 @@ class FullscreenWindow:
         self.tk.attributes('-fullscreen', self.state)
 
         self.stops = get_stop_dict()
+
+        # only populate with GTFS data stations
+        gtfs = Gtfs(os.environ['MTA_API_KEY'])
+        self.stop_keys = gtfs.get_stations_with_gtfs_data()
+        self.stop_dict = transit_util.get_stop_names_from_keys(self.stop_keys)
         
         self.add_header()
         self.update_arrivals()
+
+    def refresh(self):
+        self.clear_old_arrivals()
+        self.clear_header()
+        self.add_header()
+        self.print_arrivals()
 
     def northbound_southbound_toggle(self):
         if self.stop_id[-1] == 'N':
@@ -46,10 +57,15 @@ class FullscreenWindow:
         elif self.stop_id[-1] == 'S':
             self.stop_id = self.stop_id[:-1] + 'N'
         print "Switched direction {0}".format(self.stop_id)
-        self.clear_old_arrivals()
-        self.clear_header()
-        self.add_header()
-        self.print_arrivals()
+        self.refresh()
+
+    def get_direction(self):
+        direction = ""
+        if self.stop_id[-1] == 'N':
+            direction = "Northbound"
+        if self.stop_id[-1] == 'S':
+            direction = "Southbound"
+        return direction
 
     def update_arrivals(self):
         try:
@@ -71,32 +87,34 @@ class FullscreenWindow:
     def add_header(self):
         stop = self.stops[self.stop_id[:-1]]
 
-        direction = ""
-        if self.stop_id[-1] == 'N':
-            direction = "Northbound"
-        if self.stop_id[-1] == 'S':
-            direction = "Southbound"
+        direction = self.get_direction()
         
         self.header = Label(self.frame,
             text=stop,
             font=("Helvetica", 30, "bold"))
-        """
-        self.header = StationSelector(Gtfs(os.environ['MTA_API_KEY']), 
-            self.frame,
-            font=("Helvetica", 36, "bold"))
-        """
+
         self.subheader = Label(self.frame,
             text=direction,
             font=("Helvetica", 24, "bold"))
+
         self.header.bind("<Button-1>", lambda e: self.launch_station_selector())
         self.subheader.bind("<Button-1>", lambda e: self.northbound_southbound_toggle())
         self.header.pack(side=TOP)
         self.subheader.pack(side=TOP)
 
     def launch_station_selector(self):
+        station_name = StringVar()
+        station_name.set(self.header.cget('text'))
         self.station_selector = StationSelector(
-            Gtfs(os.environ['MTA_API_KEY']), self.header.cget('text'))
-        self.station_selector.mainloop()
+            Gtfs(os.environ['MTA_API_KEY']), station_name)
+        self.station_selector.wait_window()
+        self.set_new_stop(station_name.get())
+
+    def set_new_stop(self, station_name):
+        direction = self.get_direction()[0]
+        self.stop_id = self.stop_dict[station_name] + direction
+        print "New stop_id {0}".format(self.stop_id)
+        self.refresh()
 
     def clear_header(self):
         try:
