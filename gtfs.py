@@ -44,6 +44,16 @@ class Gtfs:
             times.append((update[0], eta, update[2]))
         return times
 
+    def get_stations_with_gtfs_data(self):
+        stop_id_list = []
+        self.get_feed()
+        self.parse_feed()
+        for entity in self.feed.entity:
+            for stop_time_update in entity.trip_update.stop_time_update:
+                stop_id_list.append(stop_time_update.stop_id[:-1])
+
+        return list(set(stop_id_list))
+
 if __name__ == "__main__":
 
     if not os.environ.get('MTA_API_KEY'):
