@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, os, traceback, datetime
+import sys, os, traceback, datetime, urllib2, json
 from gtfs import Gtfs
 from transit_util import get_stop_dict, get_stop_name_dict
 
@@ -13,8 +13,11 @@ from station_selector import *
 
 class FullscreenWindow:
 
-    def __init__(self, stop_id):
+    def __init__(self, stop_id, server_url):
         self.stop_id = stop_id
+        self.server_url = server_url
+        self.server_station_list = "{0}/stop_list".format(self.server_url)
+
         self.tk = Tk()
         self.tk.wm_title("NYC Train Arrival")
 
@@ -23,7 +26,7 @@ class FullscreenWindow:
             foreground='#ffffff')
 
         self.tk.attributes('-zoomed', True)
-        self.tk.config(cursor='none')
+        #self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -38,8 +41,9 @@ class FullscreenWindow:
         self.stops = get_stop_dict()
 
         # only populate with GTFS data stations
-        gtfs = Gtfs(os.environ['MTA_API_KEY'])
-        self.stop_keys = gtfs.get_stations_with_gtfs_data()
+        #gtfs = Gtfs(os.environ['MTA_API_KEY'])
+        response = urllib2.urlopen(self.server_station_list)
+        self.stop_keys = json.loads(response.read())
         self.stop_dict = transit_util.get_stop_names_from_keys(self.stop_keys)
         
         self.add_header()
@@ -166,7 +170,10 @@ class FullscreenWindow:
     def print_arrivals(self):
         gtfs = Gtfs(os.environ['MTA_API_KEY'])
         try:
-            arrivals = gtfs.get_time_to_arrival(self.stop_id)
+            self.server_route = "{0}/stop/{1}".format(self.server_url, self.stop_id)
+            response = urllib2.urlopen(self.server_route)
+            print "Received response from {0}".format(self.server_route)
+            arrivals = json.loads(response.read())
             arrivals.sort(key=lambda x: x[1])
         except:
             return
@@ -216,5 +223,10 @@ if __name__ == "__main__":
 
     station = sys.argv[1]
 
-    w = FullscreenWindow(station)
+    try:
+        server_url = sys.argv[2]
+    except IndexError:
+        server_url = 'http://127.0.0.1:5000'
+
+    w = FullscreenWindow(station, server_url)
     w.tk.mainloop()
