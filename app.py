@@ -110,7 +110,7 @@ class FullscreenWindow:
         station_name = StringVar()
         station_name.set(self.header.cget('text'))
         self.station_selector = StationSelector(
-            Gtfs(os.environ['MTA_API_KEY']), station_name)
+            self.stop_keys, station_name)
         self.station_selector.wait_window()
         self.set_new_stop(station_name.get())
 
@@ -168,7 +168,6 @@ class FullscreenWindow:
         return icon
 
     def print_arrivals(self):
-        gtfs = Gtfs(os.environ['MTA_API_KEY'])
         try:
             self.server_route = "{0}/stop/{1}".format(self.server_url, self.stop_id)
             response = urllib2.urlopen(self.server_route)
@@ -216,10 +215,6 @@ class FullscreenWindow:
         
 
 if __name__ == "__main__":
-
-    if not os.environ.get('MTA_API_KEY'):
-        with open("api_key") as f:
-            os.environ['MTA_API_KEY'] = f.readline().strip()
 
     station = sys.argv[1]
 
