@@ -18,6 +18,7 @@ class StationSelector(Toplevel):
 
         Toplevel.__init__(self, master, **kwargs)
 
+	self.config(cursor='none')
         self.state = False
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
@@ -39,8 +40,8 @@ class StationSelector(Toplevel):
         self.populate()
 
     def populate(self):
-        self.up_btn = Button(self, text=unichr(0x25B2), width=60)
-        self.down_btn = Button(self, text=unichr(0x25BC), width=60)
+        self.up_btn = Button(self, text=unichr(0x25B2), width=60, height=2)
+        self.down_btn = Button(self, text=unichr(0x25BC), width=60, height=2)
 
         self.up_btn.bind("<Button-1>", lambda e: self.scroll(-1))
         self.down_btn.bind("<Button-1>", lambda e: self.scroll(1))
