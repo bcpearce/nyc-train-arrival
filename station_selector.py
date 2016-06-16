@@ -9,8 +9,8 @@ import transit_util, gtfs
 
 class StationSelector(Toplevel):
 
-    def __init__(self, gtfs, tkStationName=None, master=None, **kwargs):
-        self.stop_keys = gtfs.get_stations_with_gtfs_data()
+    def __init__(self, stop_keys, tkStationName=None, master=None, **kwargs):
+        self.stop_keys = stop_keys
         self.stop_dict = transit_util.get_stop_names_from_keys(self.stop_keys)
         self.box_vals = sorted(self.stop_dict.keys())
 
