@@ -148,21 +148,21 @@ class FullscreenWindow:
                         '6X':unichr(0x2465)+unichr(0x2666)}
 
         try:
-            bullet = SubwayBullet(arrival[0])
+            bullet = SubwayBullet(arrival['route'])
             bullet = bullet.subsample(2)
             icon = Label(self.arrival_frame, image=bullet)
             icon.bullet = bullet
             
         except TclError:
             print "Failed to use icons, falling back to text formatting"
-            if int(arrival[0][0]) in [1,2,3]:
+            if int(arrival['route'][0]) in [1,2,3]:
                 fg = '#EE352E'
-            elif int(arrival[0][0]) in [4,5,6]:
+            elif int(arrival['route'][0]) in [4,5,6]:
                 fg = '#00933C'
             else:
                 fg = '808183'
             icon = Label(self.arrival_frame, 
-                text=u"  {0}  ".format(UNICODE_DICT[arrival[0]]),
+                text=u"  {0}  ".format(UNICODE_DICT[arrival['route']]),
                 font=("Helvetica", 24), fg=fg)
 
         return icon
@@ -173,14 +173,14 @@ class FullscreenWindow:
             response = urllib2.urlopen(self.server_route)
             print "Received response from {0}".format(self.server_route)
             arrivals = json.loads(response.read())
-            arrivals.sort(key=lambda x: x[1])
+            arrivals.sort(key=lambda x: x['time'])
         except:
             return
 
         self.clear_old_arrivals()
 
         for arrival in arrivals:
-            minutes = round(float(arrival[1]/60.0))
+            minutes = round(float(arrival['time']/60.0))
             # if the minutes is < -2, don't bother displaying
             if minutes < -2:
                 continue
