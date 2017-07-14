@@ -17,5 +17,5 @@ def get_stop_name_dict(filepath = 'google_transit/stops.txt'):
 # keys are obtained with api_key within gtfs.py
 def get_stop_names_from_keys(keys, filepath = 'google_transit/stops.txt'):
     stops = get_stop_dict(filepath)
-    return {stops[k]:k for k in keys}
+    return {stops.get(k):k for k in keys}
 
