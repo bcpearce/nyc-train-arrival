@@ -17,8 +17,7 @@ class StationSelector(Toplevel):
         list_len = kwargs.get('list_len', 5)
 
         Toplevel.__init__(self, master, **kwargs)
-
-	self.config(cursor='none')
+        self.config(cursor='none')
         self.state = False
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)

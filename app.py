@@ -26,7 +26,7 @@ class FullscreenWindow:
             foreground='#ffffff')
 
         self.tk.attributes('-zoomed', True)
-        #self.tk.config(cursor='none')
+        self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -155,14 +155,16 @@ class FullscreenWindow:
             
         except TclError:
             print "Failed to use icons, falling back to text formatting"
-            if int(arrival['route'][0]) in [1,2,3]:
+            if arrival.get('route')[0] in ['1','2','3']:
                 fg = '#EE352E'
-            elif int(arrival['route'][0]) in [4,5,6]:
+            elif arrival.get('route')[0] in ['4','5','6']:
                 fg = '#00933C'
+            elif arrival.get('route')[0] in ['L']:
+                fg = '#A7A9AC'
             else:
-                fg = '808183'
+                fg = '#808183'
             icon = Label(self.arrival_frame, 
-                text=u"  {0}  ".format(UNICODE_DICT[arrival['route']]),
+                text=u"  {0}  ".format(UNICODE_DICT.get(arrival['route'], arrival['route'])),
                 font=("Helvetica", 24), fg=fg)
 
         return icon
