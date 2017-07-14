@@ -155,17 +155,12 @@ class FullscreenWindow:
             
         except TclError:
             print "Failed to use icons, falling back to text formatting"
-            if arrival.get('route')[0] in ['1','2','3']:
-                fg = '#EE352E'
-            elif arrival.get('route')[0] in ['4','5','6']:
-                fg = '#00933C'
-            elif arrival.get('route')[0] in ['L']:
-                fg = '#A7A9AC'
-            else:
-                fg = '#808183'
+            with open('colors.json', 'r') as f:
+                colors =  json.load(f)
+            route = arrival['route']
             icon = Label(self.arrival_frame, 
-                text=u"  {0}  ".format(UNICODE_DICT.get(arrival['route'], arrival['route'])),
-                font=("Helvetica", 24), fg=fg)
+                text=u"  {0}  ".format(arrival['route']),
+                font=("Helvetica", 24), fg=colors[route][0], bg=colors[route][1])
 
         return icon
 
