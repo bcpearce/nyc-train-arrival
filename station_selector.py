@@ -19,12 +19,12 @@ class StationSelector(Toplevel):
         self.box_vals.sort()
 
         Toplevel.__init__(self, master, **kwargs)
-        #self.config(cursor='none')
+        self.config(cursor='none')
         self.state = False
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
         self.state = True
-        #self.attributes('-fullscreen', self.state)
+        self.attributes('-fullscreen', self.state)
         self.tkStopId = tkStopId
 
         try:

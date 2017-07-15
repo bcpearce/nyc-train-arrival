@@ -24,8 +24,8 @@ class FullscreenWindow:
         self.tk.tk_setPalette(background='#111111', 
             foreground='#ffffff')
 
-        #self.tk.attributes('-zoomed', True)
-        #self.tk.config(cursor='none')
+        self.tk.attributes('-zoomed', True)
+        self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -35,15 +35,11 @@ class FullscreenWindow:
         self.tk.bind("<F11>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.state = True
-        #self.tk.attributes('-fullscreen', self.state)
+        self.tk.attributes('-fullscreen', self.state)
 
         # only populate with GTFS data stations
-        if True:
-            response = urllib2.urlopen(self.server_stations)
-            self.stop_dict = json.loads(response.read())
-        else:
-            with ("stop_list.json", "r") as f:
-                self.stop_dict = json.loads(f.read())
+        response = urllib2.urlopen(self.server_stations)
+        self.stop_dict = json.loads(response.read())
         
         self.add_header()
         self.update_arrivals()
