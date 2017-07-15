@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import sys, os, traceback, datetime, urllib2, json
-from gtfs import Gtfs
 from transit_util import get_stop_dict, get_stop_name_dict
 
 if sys.version_info[0] == 2:
@@ -16,7 +15,7 @@ class FullscreenWindow:
     def __init__(self, stop_id, server_url):
         self.stop_id = stop_id
         self.server_url = server_url
-        self.server_station_list = "{0}/stop_list".format(self.server_url)
+        self.server_stations = "{0}/stop_list".format(self.server_url)
 
         self.tk = Tk()
         self.tk.wm_title("NYC Train Arrival")
@@ -25,8 +24,8 @@ class FullscreenWindow:
         self.tk.tk_setPalette(background='#111111', 
             foreground='#ffffff')
 
-        self.tk.attributes('-zoomed', True)
-        self.tk.config(cursor='none')
+        #self.tk.attributes('-zoomed', True)
+        #self.tk.config(cursor='none')
 
         self.frame = Frame(self.tk)
         self.frame.pack()
@@ -36,15 +35,15 @@ class FullscreenWindow:
         self.tk.bind("<F11>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.state = True
-        self.tk.attributes('-fullscreen', self.state)
-
-        self.stops = get_stop_dict()
+        #self.tk.attributes('-fullscreen', self.state)
 
         # only populate with GTFS data stations
-        #gtfs = Gtfs(os.environ['MTA_API_KEY'])
-        response = urllib2.urlopen(self.server_station_list)
-        self.stop_keys = json.loads(response.read())
-        self.stop_dict = transit_util.get_stop_names_from_keys(self.stop_keys)
+        if True:
+            response = urllib2.urlopen(self.server_stations)
+            self.stop_dict = json.loads(response.read())
+        else:
+            with ("stop_list.json", "r") as f:
+                self.stop_dict = json.loads(f.read())
         
         self.add_header()
         self.update_arrivals()
@@ -89,7 +88,7 @@ class FullscreenWindow:
         return "break"
 
     def add_header(self):
-        stop = self.stops[self.stop_id[:-1]]
+        stop = self.stop_dict[self.stop_id[:-1]]['stop_name']
 
         direction = self.get_direction()
         
@@ -107,16 +106,16 @@ class FullscreenWindow:
         self.subheader.pack(side=TOP)
 
     def launch_station_selector(self):
-        station_name = StringVar()
-        station_name.set(self.header.cget('text'))
+        stop_id_var = StringVar()
+        stop_id_var.set(self.stop_id)
         self.station_selector = StationSelector(
-            self.stop_keys, station_name)
+            self.stop_dict, stop_id_var)
         self.station_selector.wait_window()
-        self.set_new_stop(station_name.get())
+        self.set_new_stop(stop_id_var.get())
 
-    def set_new_stop(self, station_name):
+    def set_new_stop(self, stop_key):
         direction = self.get_direction()[0]
-        self.stop_id = self.stop_dict[station_name] + direction
+        self.stop_id = stop_key + direction
         print "New stop_id {0}".format(self.stop_id)
         self.refresh()
 
@@ -169,7 +168,7 @@ class FullscreenWindow:
             self.server_route = "{0}/stop/{1}".format(self.server_url, self.stop_id)
             response = urllib2.urlopen(self.server_route)
             print "Received response from {0}".format(self.server_route)
-            arrivals = json.loads(response.read())
+            arrivals = json.loads(response.read())['arrivals']
             arrivals.sort(key=lambda x: x['time'])
         except:
             return

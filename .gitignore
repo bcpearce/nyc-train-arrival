@@ -1,3 +1,4 @@
 api_key
 **/*.pyc
 *.pyc
+stop_list.json
